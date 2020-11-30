@@ -10,8 +10,7 @@ class SanBay(db.Model):
 
     Id = Column(Integer, primary_key=True, autoincrement=True)
     TenSanBay = Column(String(50), nullable=False)
-    TuyenBayId = relationship("TuyenBay", backref='TUYENBAY', lazy=True)
-    # TuyenBayId = relationship("TenSanBayDen", backref='TUYENBAY', lazy=True)
+    Tuyenbay = relationship('TuyenBay', backref='SANBAY', lazy=True)
 
     def __str__(self):
         return self.TenSanBay
@@ -21,7 +20,7 @@ class TuyenBay(db.Model):
 
     Id = Column(Integer, primary_key=True, autoincrement=True)
     IdSanBayDi = Column(Integer, ForeignKey(SanBay.Id), nullable=False)
-    # IdSanBayDi = Column(Integer, ForeignKey(SanBay.Id), nullable=False)
+    # IdSanBayDen = Column(Integer, ForeignKey(SanBay.Id), nullable=False)
     Description = Column(String(100), nullable=True)
 
 class NhanVien(db.Model):
