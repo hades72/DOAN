@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_admin import Admin
+from flask_login import  LoginManager
 import  os
 
 app = Flask(__name__)
@@ -11,4 +12,6 @@ app.secret_key = os.urandom(24)
 
 db = SQLAlchemy(app=app)
 admin = Admin(app=app, name="Ban Ve May Bay",
-              template_mode='bootstrap3')
+              template_mode='bootstrap4')
+
+login = LoginManager(app=app)
