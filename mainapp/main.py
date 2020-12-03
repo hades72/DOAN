@@ -1,3 +1,5 @@
+from datetime import time
+
 from flask import Flask, render_template, redirect, request
 from flask_login import login_user
 from mainapp import app, login
@@ -8,7 +10,7 @@ import hashlib
 
 @app.route("/")
 def home():
-    return f"<h1>dasdasd1234</h1>"
+    return f"<h1>Bán vé máy bay</h1>"
 
 @app.route("/login-admin", methods=['GET', 'POST'])
 def login_admin():
@@ -23,6 +25,10 @@ def login_admin():
         else:
             err_msg = 'Dang nhap that bai'
     return redirect("/admin")
+
+@app.route("/revenue")
+def chart():
+    return render_template('admin/revenue.html')
 
 @login.user_loader
 def user_loader(user_id):
