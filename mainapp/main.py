@@ -10,7 +10,7 @@ import hashlib
 def home():
     return f"<h1>dasdasd1234</h1>"
 
-@app.route("/login-admin", methods=['get', 'post'])
+@app.route("/login-admin", methods=['GET', 'POST'])
 def login_admin():
     err_msg = ''
     if request.method == 'POST':
@@ -25,8 +25,8 @@ def login_admin():
     return redirect("/admin")
 
 @login.user_loader
-def user_load(user_id):
-    return  User.query.get(user_id)
+def user_loader(user_id):
+    return User.query.get(user_id)
 
 if __name__ == "__main__":
     app.run(port=8900, debug=True)
