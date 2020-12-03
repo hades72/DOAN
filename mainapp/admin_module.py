@@ -1,16 +1,12 @@
 from mainapp import admin, db
-from mainapp.model import SanBay, TuyenBay, NhanVien, KhachHang, DonGia, ChuyenBay, MayBay, HoaDon, VeChuyenBay, HangVe, PhieuDatCho, VeChuyenBayKhachHang
+from mainapp.model import Role, Airport, Plane, Seat, TicketType, Flight, FlightRoute, User, Plane_TicketType, Intermediarie_AirPort
 from flask_admin.contrib.sqla import ModelView
 
-admin.add_view(ModelView(SanBay, db.session))
-admin.add_view(ModelView(TuyenBay, db.session))
-admin.add_view(ModelView(NhanVien, db.session))
-admin.add_view(ModelView(KhachHang, db.session))
-admin.add_view(ModelView(DonGia, db.session))
-admin.add_view(ModelView(ChuyenBay, db.session))
-admin.add_view(ModelView(MayBay, db.session))
-admin.add_view(ModelView(HoaDon, db.session))
-admin.add_view(ModelView(VeChuyenBay, db.session))
-admin.add_view(ModelView(HangVe, db.session))
-admin.add_view(ModelView(PhieuDatCho, db.session))
-admin.add_view(ModelView(VeChuyenBayKhachHang, db.session))
+admin.add_view(ModelView(Airport, db.session, name = "Sân Bay"))
+admin.add_view(ModelView(Plane, db.session, name = "Máy Bay" ))
+admin.add_view(ModelView(TicketType, db.session, name = "Hạng Vé"))
+admin.add_view(ModelView(Plane_TicketType, db.session, name="Chi tiết máy bay"))
+admin.add_view(ModelView(FlightRoute, db.session, name = "Tuyến Bay"))
+admin.add_view(ModelView(Flight, db.session, name = "Chuyến Bay"))
+admin.add_view(ModelView(Intermediarie_AirPort, db.session, name = "Sân bay trung gian"))
+admin.add_view(ModelView(User, db.session, name = "Nhân Viên"))

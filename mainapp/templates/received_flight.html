@@ -1,0 +1,21 @@
+{% extends 'base/base.html' %}
+{% block header%}
+{{ super() }}
+<body>
+<form style="margin:30px;" action="received_flight" method="post">
+
+    <div class="col-md-6">
+        <div class="form-group">
+            <h1 style="color:red;">Nhận lịch chuyến bay</h1>
+            <input class="form-control" type="text" placeholder="Email" name="email" id="email">
+        </div>
+    </div>
+    <div class="col-md">
+        <div class="form-btn">
+            <button class="submit-btn">Nhận lịch</button>
+        </div>
+    </div>
+</form>
+</body>
+
+{% endblock %}

@@ -11,7 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 app.secret_key = os.urandom(24)
 
 db = SQLAlchemy(app=app)
-admin = Admin(app=app, name="Ban Ve May Bay",
+admin = Admin(app=app, name="Bán vé máy bay",
               template_mode='bootstrap4')
 
 login = LoginManager(app=app)

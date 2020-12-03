@@ -1,0 +1,115 @@
+{% extends 'base/base.html' %}
+{% block header%}
+{{ super() }}
+
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+        integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+<link rel="stylesheet" href="/static/style.css"/>
+<div class="search-box">
+    <div id="booking" class="section">
+		<div class="section-center">
+			<div class="container">
+				<div class="row">
+					<div class="booking-form">
+						<form action="search_flight" method="post">
+
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<span class="form-label">SÂN BAY ĐI</span>
+										<input class="form-control" type="text" placeholder="City or airport" name="flyingFrom" id ="flyingFrom">
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<span class="form-label">SÂN BAY ĐẾN</span>
+										<input class="form-control" type="text" placeholder="City or airport" name="flyingTo" id ="flyingTo">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md">
+									<div class="form-group">
+										<span class="form-label">NGÀY KHỞI HÀNH</span>
+										<input class="form-control" type="date" name="dateStart" id ="dateStart">
+									</div>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md">
+									<div class="form-btn">
+										<button class="submit-btn">XEM CHUYẾN BAY</button>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class = "main">
+    {% for f in list_flight%}
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th scope="col">Mã Chuyến Bay</th>
+        <th scope="col">Ngày giờ</th>
+        <th scope="col">Sân Bay Đi</th>
+        <th scope="col">Sân Bay Đến</th>
+        <th scope="col">Thời gian bay</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <th scope="row">{{f.Id}}</th>
+    <td>{{f.FlightDate}}</td>
+    <td>{{f.Origin}}</td>
+    <td>{{f.Destination}}</td>
+    <td>{{f.FlightTime}} Phút</td>
+    {% for t in f.listTicket %}
+    <table class="table table-bordered">
+        <thead>
+        <th scope="row">Số vé {{t.Name}}</th>
+        <th scope="row">{{t.Quantity}}</th>
+        </thead>
+    </table>
+    {% endfor %}
+
+    <table class="table table-bordered">
+
+        <thead>
+        <th scope="col">STT</th>
+        <th scope="col">Sân bay trung gian</th>
+        <th scope="col">Thời gian chờ</th>
+        <th scope="col">Ghi chú</th>
+        </thead>
+        {% for a in f.listAirport %}
+        <tbody>
+        <td>{{a.STT}}</td>
+        <td>{{a.Airport_Name}}</td>
+        <td>{{a.WaitingTime}} Phút</td>
+        <td>{{a.Note}}</td>
+        </tbody>
+        {% endfor %}
+    </table>
+    </tbody>
+
+
+</table>
+{% endfor %}
+
+
+</div>
+{% endblock %}}
