@@ -22,14 +22,12 @@ class User(db.Model, UserMixin):
     __tablename__ = 'User'
     Id = Column(Integer, primary_key=True, autoincrement=True)
     FullName = Column(String(50), nullable=False)
-    username = Column(String(50), nullable=False)
-    password = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=True)
+    password = Column(String(50), nullable=True)
     RoleID = Column(Integer, ForeignKey(Role.Id), nullable=False)
     CMND = Column(String(50), nullable=False)
     Email = Column(String(50), nullable=True)
-    PhoneNumber = Column(String(50),nullable=True)
-    def check_role  (self):
-        return self.RoleID
+    PhoneNumber = Column(String(50), nullable=True)
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     def check_password(self, password):

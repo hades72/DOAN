@@ -65,6 +65,7 @@ def received_flight():
 @app.route("/book_flight/<id>", methods= ['GET','POST'])
 @login_required
 def book_flight(id):
+    msg = ''
     flight = ultis.get_flights_by_id(id)
     _user = User.query.filter(User.Id == session['user']['Id']).first()
     user = ultis.cv_user_to_json(_user)
@@ -78,10 +79,24 @@ def book_flight(id):
         _flightroute = request.form['flightroute']
         _cmnd = request.form['cmnd']
         _phone = request.form['phone']
-        ticket = Ticket(User_Id=user['Id'], Plane_Id=flight.Plane_Id, Status=True, TicketType_Id = 1)
-        db.session.add(ticket)
-        db.session.commit()
-    return render_template('book_flight.html', flight=flight, user=user, tickets=tickets)
+        ticket_id = request.form['ticket_id']
+        plane = Plane_TicketType.query.filter(Plane_TicketType.Plane_Id == flight.Plane_Id,
+                                              Plane_TicketType.TicketType_Id == ticket_id).first()
+        plane.Quantity = plane.Quantity - 1
+        if plane.Quantity >= 0:
+            ticket = Ticket(User_Id=user['Id'], Plane_Id=flight.Plane_Id, Status=True, TicketType_Id = ticket_id)
+            db.session.add(ticket)
+            user = User(FullName=_fullname, username=None, password=None, RoleID=2, CMND=_cmnd, Email=None,
+                        PhoneNumber=_phone)
+            db.session.add(user)
+            db.session.commit()
+            msg = 'Succes !!!'
+        else:
+            plane.Quantity = plane.Quantity + 1
+            msg = 'Fail to book flight'
+
+        return render_template('book_flight.html', flight=flight, user=user, tickets=tickets, msg=msg)
+    return render_template('book_flight.html', flight=flight, user=user, tickets=tickets, msg=msg)
 
 @app.route("/search_flight",methods = ['GET','POST'])
 def search_flight():

@@ -6,7 +6,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <div class="container">
-
+    {% if msg %}
+        <div class="alert alert-danger">{{ msg }}</div>
+    {% endif %}
     <form method="post">
         <div class="form-group" style="display:flex;">
             <div class="col-6">
@@ -14,35 +16,31 @@
                 <input type="text" class="form-control" name="flightroute" value="{{flight.Description}}" readonly>
             </div>
             <div class="col-6">
-                <label style="font-size:18px;margin-top:10px"></b>USER: </b></label>
-                <input type="text" class="form-control" name="fullname" value="{{user.FullName}}">
+                <label style="font-size:18px;margin-top:10px"></b>FullName: </b></label>
+                <input type="text" class="form-control" name="fullname" required>
             </div>
         </div>
         <div class="form-group" style="display:flex;">
             <div class="col-6">
                 <label style="font-size:18px;margin-top:10px"><b>CMND: </b></label>
-                <input type="text" class="form-control" name="cmnd" value="{{user.CMND}}">
+                <input type="text" class="form-control" name="cmnd" required>
             </div>
             <div class="col-6">
                 <label style="font-size:18px;margin-top:10px"><b>Phone Number: </b></label>
-                <input type="text" class="form-control" name="phone" value="{{user.PhoneNumber}}">
+                <input type="text" class="form-control" name="phone">
             </div>
         </div>
         <div class="form-group" style="display:flex;">
             <div class=" col-6">
                 <label style="font-size:18px;margin-top:10px"><b>Type Ticket: </b></label>
                 <div class="form-group">
-                    <select id="inputState" class="form-control">
+                    <select id="inputState" class="form-control" name = "ticket_id">
                         <option selected>Choose...</option>
                         {% for i in tickets %}
-                        <option>{{i.Name}}</option>
+                        <option value ="{{i.Id}}">{{i.Name}}</option>
                         {% endfor %}
                     </select>
                 </div>
-            </div>
-            <div class="col-6">
-                <label style="font-size:18px;margin-top:10px"><b>Money: </b></label>
-                <input type="text" class="form-control" name="money" value="{{tickets[0].Price}}" readonly>
             </div>
         </div>
         <div class="text-center">
