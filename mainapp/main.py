@@ -1,50 +1,91 @@
-from datetime import time
-import smtplib
-from socket import gaierror
-from sqlalchemy.sql import TableClause
-import ultis
-from mainapp import db
-from flask import Flask, render_template, redirect, request, json
-from flask_login import login_user
-from mainapp import app, login
+from flask import Flask, render_template, redirect, request, json, url_for, session
+from mainapp import app, login, ultis
 from mainapp.admin_module import *
-from mainapp.model import User, Flight, FlightRoute, Airport, Intermediarie_AirPort, Plane_TicketType
-from sqlalchemy import insert
+from mainapp.model import User, Flight, FlightRoute, Airport, Intermediarie_AirPort, Plane_TicketType, Ticket
 import hashlib
-import cgi
-@app.route("/")
+from functools import wraps
+def login_required(f):
+    @wraps(f)
+    def check(*args, **kwargs):
+        if not session.get("user"):
+            return redirect(url_for('user_login', next=request.url))
+        return f(*args, **kwargs)
+    return check
+@app.route("/", methods = ['GET','POST'])
 def home():
     return render_template("index.html")
+@app.route("/account", methods=['GET','POST'])
+@login_required
+def account():
+    msg = ''
+    if request.method == 'POST':
+        _name = request.form['fullname']
+        _email = request.form['email']
+        _CMND = request.form['cmnd']
+        _phone = request.form['phone']
+        user = User.query.filter(User.Id == session['user']['Id']).first()
+        user.FullName = _name
+        user.Email = _email
+        user.PhoneNumber = _phone
+        user.CMND = _CMND
+        db.session.commit()
+        msg = 'Succes !!!'
+        _user = ultis.cv_user_to_json(user)
+        session['user'] = _user
+        return render_template('account.html', msg=msg)
+    return render_template('account.html', msg=msg)
+
 @app.route("/login", methods = ['POST','GET'])
 def user_login():
-    err_msg = ""
-    user = []
     if request.method == 'POST':
-        _username = request.form['username']
-        _password = request.form['password']
-        user = User.query.filter(User.username == _username, User.password == _password).first()
-        if user:
-            if user.check_role() == 3:
-                print(user.Id)
-                return redirect('/user/' + str(user.Id))
+        err_msg = ""
+        user = []
+        if request.method == 'POST':
+            _username = request.form['username']
+            _password = request.form['password']
+            _password = hashlib.md5(_password.encode("utf-8")).hexdigest()
+            user = User.query.filter(User.username == _username, User.password == _password).first()
+            if user:
+                _user = ultis.cv_user_to_json(user)
+                session['user'] = _user
+                if "next" in request.args:
+                    return redirect(request.args["next"])
+                return redirect('/')
             else:
-                return redirect('/admin')
-        else:
-            err_msg = 'Fail to login'
-    return render_template('login.html', user=user)
-@app.route("/user/<Id>", methods = ['GET','POST'])
-def user(Id):
-    user = User.query.filter(User.Id == Id).first()
-    return render_template('user/index.html', user=user)
+                err_msg = 'Fail to login'
+        return render_template('login.html', user=user, err_msg=err_msg)
+    return render_template('login.html')
+@app.route("/logout", methods=['GET','POST'])
+def logout():
+    session['user'] = None
+    return redirect('/')
 @app.route("/received_flight", methods = ['GET','POST'])
 def received_flight():
     return render_template('received_flight.html')
-@app.route("/book_flight")
-def book_flight():
-    return render_template('book_flight.html')
+@app.route("/book_flight/<id>", methods= ['GET','POST'])
+@login_required
+def book_flight(id):
+    flight = ultis.get_flights_by_id(id)
+    _user = User.query.filter(User.Id == session['user']['Id']).first()
+    user = ultis.cv_user_to_json(_user)
+    type_tickets = Plane_TicketType.query.filter(flight.Plane_Id == Plane_TicketType.Plane_Id).all()
+    tickets = []
+    for i in type_tickets:
+        tik = TicketType.query.filter(TicketType.Id == i.TicketType_Id).first()
+        tickets.append(tik)
+    if request.method == 'POST':
+        _fullname = request.form['fullname']
+        _flightroute = request.form['flightroute']
+        _cmnd = request.form['cmnd']
+        _phone = request.form['phone']
+        ticket = Ticket(User_Id=user['Id'], Plane_Id=flight.Plane_Id, Status=True, TicketType_Id = 1)
+        db.session.add(ticket)
+        db.session.commit()
+    return render_template('book_flight.html', flight=flight, user=user, tickets=tickets)
 
 @app.route("/search_flight",methods = ['GET','POST'])
 def search_flight():
+    session['flight_route'] = []
     list_flights = []
     flights = []
     if request.method == 'POST':
@@ -120,19 +161,21 @@ def search_flight():
         }
         list_flights.append(dic)
     return render_template('search_flight.html', list_flight=list_flights)
-@app.route("/signup", methods = ['POST'])
+@app.route("/signup", methods = ['POST','GET'])
 def signup():
-    _name = request.form['fullname']
-    _username = request.form['username']
-    _password = request.form['psw']
-    _email = request.form['email']
-    _cmnd = request.form['cmnd']
-    _phone = request.form['phone']
-    user = User(FullName=_name, username=_username, password=_password, RoleID=3, CMND=_cmnd, Email=_email, PhoneNumber=_phone)
-    print(user)
-    db.session.add(user)
-    db.session.commit()
-    return render_template('/login.html')
+    if request.method == 'POST':
+        _name = request.form['fullname']
+        _username = request.form['username']
+        _password = request.form['psw']
+        _password = hashlib.md5(_password.encode("utf-8")).hexdigest()
+        _email = request.form['email']
+        _cmnd = request.form['cmnd']
+        _phone = request.form['phone']
+        user = User(FullName=_name, username=_username, password=_password, RoleID=3, CMND=_cmnd, Email=_email, PhoneNumber=_phone)
+        db.session.add(user)
+        db.session.commit()
+        return render_template('/login.html')
+    return render_template('/register.html')
 @app.route("/register", methods = ['GET','POST'])
 def register():
     return render_template('/register.html')

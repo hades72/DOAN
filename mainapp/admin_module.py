@@ -1,5 +1,5 @@
 from mainapp import admin, db
-from mainapp.model import Role, Airport, Plane, Seat, TicketType, Flight, FlightRoute, User, Plane_TicketType, Intermediarie_AirPort
+from mainapp.model import Role, Airport, Plane, TicketType, Flight, FlightRoute, User, Plane_TicketType, Intermediarie_AirPort
 from flask_admin.contrib.sqla import ModelView
 
 admin.add_view(ModelView(Airport, db.session, name = "Sân Bay"))

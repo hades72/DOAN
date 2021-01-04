@@ -1,0 +1,57 @@
+{% extends 'base/base.html' %}
+{% block header%}
+{{ super() }}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<div class="container">
+    {% if msg %}
+        <div class="alert alert-success">{{ msg }}</div>
+    {% endif %}
+    <form style="background-color:red;" method="post">
+        <div class="form-group">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="username"><b>UserName:</b></label>
+                <input type="text" value="{{session.user.username}}" name="username" class="form-control" disabled>
+            </div>
+        </div>
+        <div class="form-group" style="display:flex;">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="password"><b>Password:</b></label>
+                <input type="password" value="{{session.user.password}}" name="password" class="form-control" disabled>
+            </div>
+
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;"></label>
+                <div class="btn btn-primary">Change Password</div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="fullname"><b>FullName:</b></label>
+                <input type="text" value="{{session.user.FullName}}" name="fullname" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="CMND"><b>CMND:</b></label>
+                <input type="text" value="{{session.user.CMND}}" name="cmnd" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="email"><b>Email:</b></label>
+                <input type="text" value="{{session.user.Email}}" name="email" class="form-control">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-6">
+                <label style="margin-top:10px;margin-left:10px;font-size:18px;" for="phone"><b>PhoneNumber:</b></label>
+                <input type="text" value="{{session.user.PhoneNumber}}" name="phone" class="form-control">
+            </div>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">Centered button</button>
+        </div>
+
+    </form>
+</div>
+{% endblock%}

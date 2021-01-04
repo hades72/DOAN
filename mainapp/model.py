@@ -66,6 +66,12 @@ class FlightRoute(db.Model):
     # Đích đến
     def __str__(self):
         return self.Description
+# intermediarie_aiport = db.Table('intermediarie_aiport',
+#                                 Column('FlightRoute_Id', Integer,
+#                                        ForeignKey('FLIGHTROUTE.Id'),
+#                                        primary_key=True),
+#                                 Column('Airport_Id',Integer,
+#                                        ))
 class Intermediarie_AirPort(db.Model):
     __tablename__ = 'INTERMEDIARIE_AIRPORT'
     FlightRoute_Id = Column(Integer, ForeignKey(FlightRoute.Id), primary_key=True)
@@ -112,103 +118,27 @@ class Plane_TicketType(db.Model):
     Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False, primary_key=True)
     TicketType_Id = Column(Integer, ForeignKey(TicketType.Id), nullable=False,primary_key=True)
     Quantity = Column(Integer, nullable=False)
+
+
+
     Plane = relationship('Plane', foreign_keys=[Plane_Id])
     TicketType = relationship('TicketType', foreign_keys=[TicketType_Id])
     def __str__(self):
         return "no return"
-class Seat(db.Model):
-    __tablename__ = 'SEAT'
-    Id = Column(Integer, primary_key=True,autoincrement=True)
-    Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False)
-    TicketType_Id = Column(Integer, ForeignKey(TicketType.Id), nullable=False)
-    Status = Column(Boolean, default=False)
-
-
-    Plane = relationship('Plane', foreign_keys=[Plane_Id])
-    TicketType = relationship('TicketType', foreign_keys=[TicketType_Id])
-    def __str__(self):
-        return self.Id
-
 class Ticket(db.Model):
     __tablename__ = 'TICKET'
     Id = Column(Integer, primary_key=True, autoincrement=True)
     Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False)
-    Seat_Id = Column(Integer, ForeignKey(Seat.Id), nullable=False)
     User_Id = Column(Integer, ForeignKey(User.Id), nullable=False)
+    TicketType_Id = Column(Integer, ForeignKey(TicketType.Id), nullable=False)
+    Status = Column(Boolean, default=False)
 
 
+    TicketType = relationship('TicketType', foreign_keys=[TicketType_Id])
     Plane = relationship('Plane', foreign_keys=[Plane_Id])
-    Seat = relationship('Seat', foreign_keys=[Seat_Id])
     User = relationship('User', foreign_keys=[User_Id])
     def __str__(self):
         return self.Id
-
-# class HoaDon(db.Model):
-#     __tablename__ = 'HOADON'
-#
-#     Id = Column(Integer, primary_key=True, autoincrement=True)
-#     ThanhTien = Column(Float, nullable=False)
-#     NgayLap = Column(Date, default=datetime.now(), nullable=False)
-#     IdNhanVien = Column(Integer, ForeignKey(NhanVien.Id), nullable=False)
-#     IdKhachHang = Column(Integer, ForeignKey(KhachHang.CMND), nullable=False)
-#
-#     NhanVien = relationship('NhanVien', foreign_keys=[IdNhanVien])
-#     KhachHang = relationship('KhachHang', foreign_keys=[IdKhachHang])
-#
-#     def __str__(self):
-#         return self.ThanhTien
-#
-#
-#
-# class PhieuDatCho(db.Model):
-#     __tablename__ = 'PHIEUDATCHO'
-#
-#     Id = Column(Integer, primary_key=True, autoincrement=True)
-#     NgayDat = Column(Date, default=datetime.now(), nullable=False)
-#     SoGhe = Column(String(10), nullable=False)
-#     IdKhachHang = Column(Integer, ForeignKey(KhachHang.CMND), nullable=False)
-#     IdChuyenBay = Column(Integer, ForeignKey(ChuyenBay.Id), nullable=False)
-#     IdHangVe = Column(Integer, ForeignKey(HangVe.Id), nullable=False)
-#
-#     KhachHang = relationship('KhachHang', foreign_keys=[IdKhachHang])
-#     ChuyenBay = relationship('ChuyenBay', foreign_keys=[IdChuyenBay])
-#     HangVe = relationship('HangVe', foreign_keys=[IdHangVe])
-#
-#     def __str__(self):
-#         return self.Id
-
-# class VeChuyenBayKhachHang(db.Model):
-#     __tablename__ = 'VECHUYENBAY_KHACHHANG'
-#
-#     Id = Column(Integer, primary_key=True, autoincrement=True)
-#     IdVeChuyenBay = Column(Integer, ForeignKey(VeChuyenBay.Id), nullable=False)
-#     IdKhachHang = Column(Integer, ForeignKey(KhachHang.CMND), nullable=False)
-#     Description = Column(String(100), nullable=True)
-#
-#     VeChuyenBay = relationship('VeChuyenBay', foreign_keys=[IdVeChuyenBay])
-#     KhachHang = relationship('KhachHang', foreign_keys=[IdKhachHang])
-
-# class NhanVien(db.Model):
-#     __tablename__ = 'NHANVIEN'
-#
-#     Id = Column(Integer, primary_key=True, autoincrement=True)
-#     TenNhanVien = Column(String(100), nullable=True)
-#
-#     def __str__(self):
-#         return self.TenNhanVien
-
-# class KhachHang(db.Model):
-#     __tablename__ = 'KHACHHANG'
-#
-#     CMND = Column(Integer, primary_key=True)
-#     TenKhachHang = Column(String(100), nullable=False)
-#     GioiTinh = Column(String(10), nullable=True)
-#     SoDienThoai = Column(String(15), nullable=False)
-#     DiaChi = Column(String(200), nullable=True)
-#     GhiChu = Column(String(100), nullable=True)
-#
-#     def __str__(self):
-#         return self.TenKhachHang
 
 if __name__ == '__main__':
     db.create_all()

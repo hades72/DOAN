@@ -14,7 +14,6 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
-<link rel="stylesheet" href="/static/style.css"/>
 <div class="search-box">
     <div id="booking" class="section">
 		<div class="section-center">
@@ -22,7 +21,6 @@
 				<div class="row">
 					<div class="booking-form">
 						<form action="search_flight" method="post">
-
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
@@ -81,8 +79,12 @@
     {% for t in f.listTicket %}
     <table class="table table-bordered">
         <thead>
-        <th scope="row">Số vé {{t.Name}}</th>
+        <th class="col-3" scope="row">Số vé {{t.Name}}</th>
         <th scope="row">{{t.Quantity}}</th>
+        <th class="btn btn-danger" scope="col">
+
+            <a href="book_flight/{{f.Id}}">Đặt vé</a>
+        </th>
         </thead>
     </table>
     {% endfor %}
