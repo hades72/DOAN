@@ -15,7 +15,7 @@ def login_required(f):
 @login_required
 def history():
     print(session['user'])
-    if session['user']['RoleId'] != 1 or session['user']['RoleId'] != 2:
+    if session['user']['RoleId'] != 1 and session['user']['RoleId'] != 2:
         return redirect(url_for('search_flight'))
     msg = ''
     list_ticket = []
@@ -106,7 +106,7 @@ def received_flight():
     for f in flights:
         total_ticket = 0
         stt = 0
-        ticket = Ticket.query.filter(f.Plane_Id == Ticket.TicketType_Id, f.Plane_Id == Ticket.Plane_Id).all()
+        ticket = Ticket.query.filter(f.Plane_Id == Ticket.Plane_Id).all()
         list_airport = []
         list_ticket_type = []
         a = Airport.query.add_columns(Airport.Name).filter(f.Origin_Id == Airport.Id).one()
