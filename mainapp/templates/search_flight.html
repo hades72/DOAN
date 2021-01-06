@@ -16,101 +16,106 @@
         crossorigin="anonymous"></script>
 <div class="search-box">
     <div id="booking" class="section">
-		<div class="section-center">
-			<div class="container">
-				<div class="row">
-					<div class="booking-form">
-						<form action="search_flight" method="post">
-							<div class="row">
-								<div class="col-md-6">
-									<div class="form-group">
-										<span class="form-label">SÂN BAY ĐI</span>
-										<input class="form-control" type="text" placeholder="City or airport" name="flyingFrom" id ="flyingFrom">
-									</div>
-								</div>
-								<div class="col-md-6">
-									<div class="form-group">
-										<span class="form-label">SÂN BAY ĐẾN</span>
-										<input class="form-control" type="text" placeholder="City or airport" name="flyingTo" id ="flyingTo">
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md">
-									<div class="form-group">
-										<span class="form-label">NGÀY KHỞI HÀNH</span>
-										<input class="form-control" type="date" name="dateStart" id ="dateStart">
-									</div>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md">
-									<div class="form-btn">
-										<button class="submit-btn">XEM CHUYẾN BAY</button>
-									</div>
-								</div>
-							</div>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="section-center">
+            <div class="container">
+                <div class="row">
+                    <div class="booking-form">
+                        <form action="search_flight" method="post">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">SÂN BAY ĐI</span>
+                                        <input class="form-control" type="text" placeholder="City or airport"
+                                               name="flyingFrom" id="flyingFrom">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <span class="form-label">SÂN BAY ĐẾN</span>
+                                        <input class="form-control" type="text" placeholder="City or airport"
+                                               name="flyingTo" id="flyingTo">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="form-group">
+                                        <span class="form-label">NGÀY KHỞI HÀNH</span>
+                                        <input class="form-control" type="date" name="dateStart" id="dateStart">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md">
+                                    <div class="form-btn">
+                                        <button class="submit-btn">XEM CHUYẾN BAY</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div class = "main">
+<div class="main">
     {% for f in list_flight%}
-<table class="table table-bordered">
-    <thead>
-    <tr>
-        <th scope="col">Mã Chuyến Bay</th>
-        <th scope="col">Ngày giờ</th>
-        <th scope="col">Sân Bay Đi</th>
-        <th scope="col">Sân Bay Đến</th>
-        <th scope="col">Thời gian bay</th>
-    </tr>
-    </thead>
-    <tbody>
-
-    <th scope="row">{{f.Id}}</th>
-    <td>{{f.FlightDate}}</td>
-    <td>{{f.Origin}}</td>
-    <td>{{f.Destination}}</td>
-    <td>{{f.FlightTime}} Phút</td>
-    {% for t in f.listTicket %}
-    <table class="table table-bordered">
+    <table class="table table-bordered" style="text-align:center;">
         <thead>
-        <th class="col-3" scope="row">Số vé {{t.Name}}</th>
-        <th scope="row">{{t.Quantity}}</th>
-        <th class="btn btn-danger" scope="col">
-
-            <a href="book_flight/{{f.Id}}">Đặt vé</a>
-        </th>
+        <tr>
+            <th scope="col">Mã Chuyến Bay</th>
+            <th scope="col">Ngày giờ</th>
+            <th scope="col">Sân Bay Đi</th>
+            <th scope="col">Sân Bay Đến</th>
+            <th scope="col">Thời gian bay</th>
+            <th scope="col">#</th>
+        </tr>
         </thead>
-    </table>
-    {% endfor %}
-
-    <table class="table table-bordered">
-
-        <thead>
-        <th scope="col">STT</th>
-        <th scope="col">Sân bay trung gian</th>
-        <th scope="col">Thời gian chờ</th>
-        <th scope="col">Ghi chú</th>
-        </thead>
-        {% for a in f.listAirport %}
         <tbody>
-        <td>{{a.STT}}</td>
-        <td>{{a.Airport_Name}}</td>
-        <td>{{a.WaitingTime}} Phút</td>
-        <td>{{a.Note}}</td>
-        </tbody>
+
+        <td scope="row">{{f.Id}}</td>
+        <td>Giờ: {{f.TimeStart}} Ngày: {{f.FlightDate}}</td>
+        <td>{{f.Origin}}</td>
+        <td>{{f.Destination}}</td>
+        <td>{{f.FlightTime}} Phút</td>
+        <td class="btn btn-danger" style="font-color:black;font-weight:bold;background-color:white;">
+            <a href="book_flight/{{f.Id}}">Đặt vé</a>
+        </td>
+        {% for t in f.listTicket %}
+        <table class="table table-bordered" style="text-align:center;">
+            <thead>
+            <th class="col-6" scope="col">Số vé {{t.Name}}</th>
+            <th class="col-6" scope="col">{{t.Quantity}}</th>
+
+            </thead>
+        </table>
         {% endfor %}
+
+        <table class="table table-bordered">
+
+            <thead>
+            <th scope="col">STT</th>
+            <th scope="col">Sân bay trung gian</th>
+            <th scope="col">Thời gian chờ</th>
+            <th scope="col">Ghi chú</th>
+            </thead>
+            {% for a in f.listAirport %}
+            <tbody>
+            <td>{{a.STT}}</td>
+            <td>{{a.Airport_Name}}</td>
+            <td>{{a.WaitingTime}} Phút</td>
+            <td>{{a.Note}}</td>
+            </tbody>
+            {% endfor %}
+        </table>
+        </tbody>
+
+
     </table>
-    </tbody>
-
-
-</table>
-{% endfor %}
+    <hr>
+    <hr>
+    {% endfor %}
 
 
 </div>

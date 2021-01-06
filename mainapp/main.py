@@ -11,9 +11,46 @@ def login_required(f):
             return redirect(url_for('user_login', next=request.url))
         return f(*args, **kwargs)
     return check
-@app.route("/", methods = ['GET','POST'])
-def home():
-    return render_template("index.html")
+@app.route("/history",methods=['GET','POST'])
+@login_required
+def history():
+    print(session['user'])
+    if session['user']['RoleId'] != 1 or session['user']['RoleId'] != 2:
+        return redirect(url_for('search_flight'))
+    msg = ''
+    list_ticket = []
+    tickets = Ticket.query.filter().all()
+    for t in tickets:
+        flight_name = ""
+        flight_time = ""
+        flight_date = ""
+        user = User.query.filter(t.User_Id == User.Id).first()
+        flights = ultis.get_flights()
+        for f in flights:
+            if f.Plane_Id == t.Plane_Id:
+                flight_name = f.Description
+                flight_time = f.TimeStart
+                flight_date = f.FlightDate
+        ticket = TicketType.query.filter(TicketType.Id == t.TicketType_Id).first()
+        dic = {
+            "Id": t.Id,
+            "name": user.FullName,
+            "flightname": flight_name,
+            "phone": user.PhoneNumber,
+            "time": flight_time,
+            "date": flight_date,
+            "typeticket": ticket.Name,
+            "price": ticket.Price
+        }
+        list_ticket.append(dic)
+    return render_template('history.html', list_ticket=list_ticket)
+@app.route("/delete_ticket/<id>", methods = ['GET', 'POST'])
+def delete_ticket(id):
+    msg = ""
+    Ticket.query.filter(Ticket.Id == id).delete()
+    db.session.commit()
+    return redirect(url_for('history'))
+
 @app.route("/account", methods=['GET','POST'])
 @login_required
 def account():
@@ -40,19 +77,18 @@ def user_login():
     if request.method == 'POST':
         err_msg = ""
         user = []
-        if request.method == 'POST':
-            _username = request.form['username']
-            _password = request.form['password']
-            _password = hashlib.md5(_password.encode("utf-8")).hexdigest()
-            user = User.query.filter(User.username == _username, User.password == _password).first()
-            if user:
-                _user = ultis.cv_user_to_json(user)
-                session['user'] = _user
-                if "next" in request.args:
-                    return redirect(request.args["next"])
-                return redirect('/')
-            else:
-                err_msg = 'Fail to login'
+        _username = request.form['username']
+        _password = request.form['password']
+        _password = hashlib.md5(_password.encode("utf-8")).hexdigest()
+        user = User.query.filter(User.username == _username, User.password == _password).first()
+        if user:
+            _user = ultis.cv_user_to_json(user)
+            session['user'] = _user
+            if "next" in request.args:
+                return redirect(request.args["next"])
+            return redirect('/')
+        else:
+            err_msg = 'Fail to login'
         return render_template('login.html', user=user, err_msg=err_msg)
     return render_template('login.html')
 @app.route("/logout", methods=['GET','POST'])
@@ -61,7 +97,55 @@ def logout():
     return redirect('/')
 @app.route("/received_flight", methods = ['GET','POST'])
 def received_flight():
-    return render_template('received_flight.html')
+
+    msg = ''
+    session['flight_route'] = []
+    list_flight = []
+    flights = ultis.get_flights()
+
+    for f in flights:
+        total_ticket = 0
+        stt = 0
+        ticket = Ticket.query.filter(f.Plane_Id == Ticket.TicketType_Id, f.Plane_Id == Ticket.Plane_Id).all()
+        list_airport = []
+        list_ticket_type = []
+        a = Airport.query.add_columns(Airport.Name).filter(f.Origin_Id == Airport.Id).one()
+        b = Airport.query.add_columns(Airport.Name).filter(f.Destination_Id == Airport.Id).one()
+        airports = Intermediarie_AirPort.query.filter(f.Id == Intermediarie_AirPort.FlightRoute_Id).all()
+        plane = Plane_TicketType.query.filter(f.Plane_Id == Plane_TicketType.Plane_Id).all()
+        for p in plane:
+
+            total_ticket += p.Quantity
+            plane_details = {
+                "Name": p.TicketType,
+                "Quantity": p.Quantity
+            }
+            list_ticket_type.append(plane_details)
+        for air in airports:
+            stt += 1
+            air_name = Airport.query.filter(air.Airport_Id == Airport.Id).one()
+            airports_details = {
+                "STT": stt,
+                "Airport_Name": air_name.Name,
+                "WaitingTime": air.WaitingTime,
+                "Note": air.Note
+            }
+            list_airport.append(airports_details)
+        dic = {
+            "Id": f.Id,
+            "FlightDate": f.FlightDate,
+            "FlightTime": f.FlightTime,
+            "TimeStart": f.TimeStart,
+            "Origin": a.Name,
+            "Destination": b.Name,
+            "listAirport": list_airport,
+            "listTicket": list_ticket_type,
+            "totalTicket": total_ticket,
+            "ticketed": len(ticket)
+        }
+        list_flight.append(dic)
+        print(list_flight)
+    return render_template('received_flight.html', list_flight=list_flight)
 @app.route("/book_flight/<id>", methods= ['GET','POST'])
 @login_required
 def book_flight(id):
@@ -84,9 +168,9 @@ def book_flight(id):
                                               Plane_TicketType.TicketType_Id == ticket_id).first()
         plane.Quantity = plane.Quantity - 1
         if plane.Quantity >= 0:
-            ticket = Ticket(User_Id=user['Id'], Plane_Id=flight.Plane_Id, Status=True, TicketType_Id = ticket_id)
+            ticket = Ticket(User_Id=user['Id'], Plane_Id=flight.Plane_Id, TicketType_Id = ticket_id)
             db.session.add(ticket)
-            user = User(FullName=_fullname, username=None, password=None, RoleID=2, CMND=_cmnd, Email=None,
+            user = User(FullName=_fullname, username=None, password=None, RoleID=4, CMND=_cmnd, Email=None,
                         PhoneNumber=_phone)
             db.session.add(user)
             db.session.commit()
@@ -98,7 +182,7 @@ def book_flight(id):
         return render_template('book_flight.html', flight=flight, user=user, tickets=tickets, msg=msg)
     return render_template('book_flight.html', flight=flight, user=user, tickets=tickets, msg=msg)
 
-@app.route("/search_flight",methods = ['GET','POST'])
+@app.route("/",methods = ['GET','POST'])
 def search_flight():
     session['flight_route'] = []
     list_flights = []
@@ -152,7 +236,7 @@ def search_flight():
         for p in plane:
             plane_details = {
                 "Name": p.TicketType,
-                "Quantity": p.Quantity
+                "Quantity": p.Quantity,
             }
             list_ticket_type.append(plane_details)
         for air in airports:
@@ -171,13 +255,14 @@ def search_flight():
             "FlightTime" : f.FlightTime,
             "Origin" : a.Name,
             "Destination" : b.Name,
+            "TimeStart": f.TimeStart,
             "listAirport": list_airport,
             "listTicket": list_ticket_type
         }
         list_flights.append(dic)
     return render_template('search_flight.html', list_flight=list_flights)
-@app.route("/signup", methods = ['POST','GET'])
-def signup():
+@app.route("/register", methods = ['POST','GET'])
+def register():
     if request.method == 'POST':
         _name = request.form['fullname']
         _username = request.form['username']
@@ -189,24 +274,8 @@ def signup():
         user = User(FullName=_name, username=_username, password=_password, RoleID=3, CMND=_cmnd, Email=_email, PhoneNumber=_phone)
         db.session.add(user)
         db.session.commit()
-        return render_template('/login.html')
+        return redirect(url_for('user_login'))
     return render_template('/register.html')
-@app.route("/register", methods = ['GET','POST'])
-def register():
-    return render_template('/register.html')
-# @app.route("/login-admin", methods=['GET', 'POST'])
-# def login_admin():
-#     err_msg = ''
-#     if request.method == 'POST':
-#         username = request.form.get('username')
-#         password = request.form.get('password')
-#         # password = str(hashlib.md5(password.strip().encode("utf-8")).hexdigest())
-#         user = User.query.filter(User.username == username, User.password == password).first()
-#         if user:
-#             login_user(user=user)
-#         else:
-#             err_msg = 'Dang nhap that bai'
-#     return redirect("/admin")
 
 @app.route("/revenue")
 def chart():
@@ -215,6 +284,5 @@ def chart():
 @login.user_loader
 def user_loader(user_id):
     return User.query.get(user_id)
-
 if __name__ == "__main__":
     app.run(port=8900, debug=True)

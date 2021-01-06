@@ -1,0 +1,47 @@
+{% extends 'base/base.html' %}
+{% block header%}
+{{ super() }}
+<body>
+
+<div class="container">
+    <h1> Danh sách vé đã đặt </h1>
+    {% if msg %}
+        <div class="alert alert-success">{{ msg }}</div>
+    {% endif %}
+    <table class="table table-sm table-dark" style="font-weight:bold;text-align:center;">
+        <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Chuyến Bay</th>
+            <th scope="col">Hành Khách</th>
+            <th scope="col">Điện Thoại</th>
+            <th scope="col">Thời Gian</th>
+            <th scope="col">Hạng Vé</th>
+            <th scope="col">Giá Tiền</th>
+            <th scope="col">#</th>
+
+        </tr>
+        </thead>
+        {% for f in list_ticket %}
+        <tbody>
+
+        <tr>
+            <td>{{f.Id}}</td>
+            <td scope="row">{{f.flightname}}</td>
+            <td>{{f.name}}</td>
+            <td>{{f.phone}}</td>
+            <td>Ngày: {{f.date}} - Giờ: {{f.time}}</td>
+            <td>{{f.typeticket}}</td>
+            <td>{{f.price}}</td>
+            <td class="btn btn-danger" style="font-color:black;font-weight:bold;background-color:white;">
+                <a href="delete_ticket/{{f.Id}}">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+
+{% endblock %}

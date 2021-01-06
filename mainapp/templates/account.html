@@ -6,6 +6,7 @@
     {% if msg %}
         <div class="alert alert-success">{{ msg }}</div>
     {% endif %}
+    <h1> Thông tin cá nhân</h1>
     <form style="background-color:red;" method="post">
         <div class="form-group">
             <div class="col-6">
@@ -19,10 +20,10 @@
                 <input type="password" value="{{session.user.password}}" name="password" class="form-control" disabled>
             </div>
 
-            <div class="col-6">
-                <label style="margin-top:10px;margin-left:10px;font-size:18px;"></label>
-                <div class="btn btn-primary">Change Password</div>
-            </div>
+<!--            <div class="col-6">-->
+<!--                <label style="margin-top:10px;margin-left:10px;font-size:18px;"></label>-->
+<!--                <div class="btn btn-primary">Change Password</div>-->
+<!--            </div>-->
         </div>
         <div class="form-group">
             <div class="col-6">
@@ -49,7 +50,7 @@
             </div>
         </div>
         <div class="text-center">
-            <button type="submit" class="btn btn-primary">Centered button</button>
+            <button type="submit" class="btn btn-primary">Change</button>
         </div>
 
     </form>

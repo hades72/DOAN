@@ -1,10 +1,8 @@
-from sqlalchemy import Column, Integer, Float, String, Date, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, Float, String, TIME, Boolean, ForeignKey, Date
 from sqlalchemy.orm import relationship
 from mainapp import db
-from datetime import datetime
-from flask_login import  UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask_login import UserMixin
+import hashlib
 
 class Role(db.Model):
     __tablename__ = 'Role'
@@ -13,7 +11,8 @@ class Role(db.Model):
     # Role has 3 type:
     # - admin
     # - seller
-    # - passenger
+    # - user
+    # - orther
 
     def __str__(self):
         return self.Name
@@ -22,16 +21,16 @@ class User(db.Model, UserMixin):
     __tablename__ = 'User'
     Id = Column(Integer, primary_key=True, autoincrement=True)
     FullName = Column(String(50), nullable=False)
-    username = Column(String(50), nullable=True)
+    username = Column(String(50))
     password = Column(String(50), nullable=True)
     RoleID = Column(Integer, ForeignKey(Role.Id), nullable=False)
     CMND = Column(String(50), nullable=False)
     Email = Column(String(50), nullable=True)
     PhoneNumber = Column(String(50), nullable=True)
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    Role = relationship('Role', foreign_keys=[RoleID])
+    def get_id(self):
+        return (self.Id)
+
     def __str__(self):
         return  self.FullName
 
@@ -64,12 +63,7 @@ class FlightRoute(db.Model):
     # Đích đến
     def __str__(self):
         return self.Description
-# intermediarie_aiport = db.Table('intermediarie_aiport',
-#                                 Column('FlightRoute_Id', Integer,
-#                                        ForeignKey('FLIGHTROUTE.Id'),
-#                                        primary_key=True),
-#                                 Column('Airport_Id',Integer,
-#                                        ))
+
 class Intermediarie_AirPort(db.Model):
     __tablename__ = 'INTERMEDIARIE_AIRPORT'
     FlightRoute_Id = Column(Integer, ForeignKey(FlightRoute.Id), primary_key=True)
@@ -103,7 +97,8 @@ class Flight(db.Model):
     Id = Column(Integer, primary_key=True, autoincrement=True)
     Name = Column(String(50), nullable=False)
     FlightDate = Column(Date, nullable=False)
-    FlightTime = Column(String(10), nullable=False)
+    TimeStart = Column(TIME, nullable=False)
+    FlightTime = Column(Integer, nullable=False)
     Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False)
     FlightRoute_Id = Column(Integer, ForeignKey(FlightRoute.Id), nullable=False)
 
@@ -116,9 +111,6 @@ class Plane_TicketType(db.Model):
     Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False, primary_key=True)
     TicketType_Id = Column(Integer, ForeignKey(TicketType.Id), nullable=False,primary_key=True)
     Quantity = Column(Integer, nullable=False)
-
-
-
     Plane = relationship('Plane', foreign_keys=[Plane_Id])
     TicketType = relationship('TicketType', foreign_keys=[TicketType_Id])
     def __str__(self):
@@ -126,17 +118,14 @@ class Plane_TicketType(db.Model):
 class Ticket(db.Model):
     __tablename__ = 'TICKET'
     Id = Column(Integer, primary_key=True, autoincrement=True)
-    Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False)
     User_Id = Column(Integer, ForeignKey(User.Id), nullable=False)
+    User = relationship('User', foreign_keys=[User_Id])
+    Plane_Id = Column(Integer, ForeignKey(Plane.Id), nullable=False)
     TicketType_Id = Column(Integer, ForeignKey(TicketType.Id), nullable=False)
-    Status = Column(Boolean, default=False)
-
-
     TicketType = relationship('TicketType', foreign_keys=[TicketType_Id])
     Plane = relationship('Plane', foreign_keys=[Plane_Id])
-    User = relationship('User', foreign_keys=[User_Id])
     def __str__(self):
-        return self.Id
+        return self.Plane
 
 if __name__ == '__main__':
     db.create_all()

@@ -2,20 +2,39 @@
 {% block header%}
 {{ super() }}
 <body>
-<form style="margin:30px;" action="received_flight" method="post">
 
-    <div class="col-md-6">
-        <div class="form-group">
-            <h1 style="color:red;">Nhận lịch chuyến bay</h1>
-            <input class="form-control" type="text" placeholder="Email" name="email" id="email">
-        </div>
-    </div>
-    <div class="col-md">
-        <div class="form-btn">
-            <button class="submit-btn">Nhận lịch</button>
-        </div>
-    </div>
-</form>
+<div class="container">
+    <h1> Danh sách chuyến bay</h1>
+    <table class="table table-sm table-dark" style="font-weight:bold;text-align:center;">
+        <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Sân bay đi</th>
+            <th scope="col">Sân bay đến</th>
+            <th scope="col">Khởi hành</th>
+            <th scope="col">Thời gian</th>
+            <th scope="col">Số ghế trống</th>
+            <th scope="col">Số ghế đặt</th>
+
+        </tr>
+        </thead>
+        {% for f in list_flight %}
+        <tbody>
+
+        <tr>
+            <th scope="row">{{f.Id}}</th>
+            <td>{{f.Origin}}</td>
+            <td>{{f.Destination}}</td>
+            <td>{{f.FlightDate}}</td>
+            <td>{{f.TimeStart}}</td>
+            <td>{{f.totalTicket}}</td>
+            <td style="text-align:center;">{{f.ticketed}}</td>
+        </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+</div>
 </body>
 
 {% endblock %}

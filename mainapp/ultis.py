@@ -42,7 +42,7 @@ def get_flights_by_to_date(idTo, dateStart):
     return flights
 def get_flights():
     flights = Flight.query.join(FlightRoute).\
-        add_columns(Flight.Id, Flight.FlightDate, FlightRoute.Origin_Id, FlightRoute.Destination_Id, Flight.FlightTime, Flight.Plane_Id).\
+        add_columns(Flight.Id, Flight.FlightDate, FlightRoute.Origin_Id, FlightRoute.Destination_Id, Flight.TimeStart, Flight.FlightTime, Flight.Plane_Id, FlightRoute.Description).\
         filter(Flight.FlightRoute_Id == FlightRoute.Id).all()
     return flights
 def get_flights_by_id(id):

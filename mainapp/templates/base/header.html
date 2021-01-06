@@ -10,9 +10,9 @@
             </div>
             <nav>
                 <ul id="MenuItems">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="{{url_for('search_flight')}}">Flight</a></li>
-                    <li><a href="{{url_for('received_flight')}}">Contact</a></li>
+                    <li><a href="{{url_for('search_flight')}}">Home</a></li>
+                    <li><a href="{{url_for('received_flight')}}">Flight</a></li>
+                    <li><a href="{{url_for('history')}}">History</a></li>
                     <li><a href="{{url_for('account')}}">Account</a></li>
                     <li>{% if session['user'] %}
                         <a href="{{url_for('logout')}}">
